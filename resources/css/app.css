@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+@font-face {
+    font-family: 'Content';
+    src: url('/staradmin/fonts/Content/Content-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/staradmin/fonts/Nunito/Nunito-Regular.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/staradmin/fonts/Nunito/Nunito-SemiBold.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/staradmin/fonts/Nunito/Nunito-Bold.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 700 900;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Content';
+    src: url('/staradmin/fonts/Content/Content-Bold.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 600 900;
+    font-display: swap;
+}
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Content', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-en: 'Nunito', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@keyframes loader-slide {
+    0% { transform: translateX(-110%); }
+    50% { transform: translateX(100%); }
+    100% { transform: translateX(220%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pageLoader * { animation-duration: 1s !important; }
+}
