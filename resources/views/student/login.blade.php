@@ -7,12 +7,13 @@
     <title>{{ __('student.login.title') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-slate-50 {{ app()->isLocale('en') ? 'font-en' : 'font-sans' }} text-slate-800 antialiased">
+<body class="min-h-screen bg-[#020d1c] {{ app()->isLocale('en') ? 'font-en' : 'font-sans' }} text-slate-800 antialiased">
     @include('student.partials.page-loader')
+    @include('student.partials.auth-network-background')
 
-    <main class="relative grid min-h-screen place-items-center overflow-hidden px-4 py-10 sm:px-6">
-        <div class="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-blue-200/50 blur-3xl"></div>
-        <div class="pointer-events-none absolute -bottom-28 -right-20 h-96 w-96 rounded-full bg-cyan-100/70 blur-3xl"></div>
+    <main class="relative z-10 grid min-h-screen place-items-center overflow-hidden px-4 py-10 sm:px-6">
+        <div class="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl"></div>
+        <div class="pointer-events-none absolute -bottom-28 -right-20 h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl"></div>
 
         <div class="relative w-full max-w-lg">
             <!-- <div class="mb-4 flex justify-end">
