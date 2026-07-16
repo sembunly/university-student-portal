@@ -8,7 +8,7 @@
         $student = $student ?? [
             'name_km' => '',
             'name_en' => '',
-            'student_id' => $studentId ?? 'នឹងបង្កើតបន្ទាប់ពីរក្សាទុក',
+            'student_id' => $studentId ?? '',
             'phone' => $accountPhone ?? '',
             'email' => '',
             'date_of_birth' => null,
