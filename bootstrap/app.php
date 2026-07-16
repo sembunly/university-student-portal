@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Middleware\EnsureStudentAuthenticated;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\SetLocale;
-use App\Http\Middleware\EnsureDemoStudentAuthenticated;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->appendToGroup('web', SetLocale::class);
         $middleware->alias([
-            'student.demo.auth' => EnsureDemoStudentAuthenticated::class,
+            'student.auth' => EnsureStudentAuthenticated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

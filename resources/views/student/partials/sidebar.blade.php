@@ -1,3 +1,10 @@
+@php
+    $localizedStudentName = app()->isLocale('en') ? data_get($student, 'name_en') : data_get($student, 'name_km');
+    $studentDisplayName = filled($localizedStudentName)
+        ? $localizedStudentName
+        : (data_get($student, 'student_id') !== '—' ? data_get($student, 'student_id') : data_get($student, 'phone'));
+@endphp
+
 <aside id="studentSidebar"
     class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:w-80 lg:translate-x-0">
     <div class="flex h-24 items-center gap-3 border-b border-slate-100 px-5">
@@ -19,15 +26,15 @@
 
     <div class="m-4 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5">
         @if(!empty($student['avatar']))
-            <img src="{{ $student['avatar'] }}" alt="{{ __('student.common.photo_of', ['name' => app()->isLocale('en') ? $student['name_en'] : $student['name_km']]) }}"
+            <img src="{{ $student['avatar'] }}" alt="{{ __('student.common.photo_of', ['name' => $studentDisplayName]) }}"
                 class="h-16 w-16 rounded-xl object-cover ring-2 ring-white">
         @else
             <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-blue-100 text-xl font-extrabold text-blue-700 ring-2 ring-white">
-                {{ mb_substr(app()->isLocale('en') ? $student['name_en'] : $student['name_km'], 0, 1) }}
+                {{ mb_substr($studentDisplayName, 0, 1) }}
             </div>
         @endif
         <div class="min-w-0">
-            <p class="truncate font-extrabold text-slate-900">{{ app()->isLocale('en') ? $student['name_en'] : $student['name_km'] }}</p>
+            <p class="truncate font-extrabold text-slate-900">{{ $studentDisplayName }}</p>
             <p class="mt-1 text-sm font-medium text-slate-500">{{ $student['student_id'] }}</p>
         </div>
     </div>
@@ -36,9 +43,6 @@
         $studentMenu = [
             ['label' => __('student.nav.home'), 'href' => route('student.dashboard'), 'icon' => 'home', 'active' => request()->routeIs('student.dashboard')],
             ['label' => __('student.nav.personal_information'), 'href' => route('student.information.show'), 'icon' => 'user', 'active' => request()->routeIs('student.information.*')],
-            ['label' => __('student.nav.study_information'), 'href' => route('student.dashboard') . '#study-information', 'icon' => 'eye'],
-            ['label' => __('student.nav.study_history'), 'href' => '#', 'icon' => 'history'],
-            ['label' => __('student.nav.settings'), 'href' => '#', 'icon' => 'settings'],
         ];
     @endphp
 

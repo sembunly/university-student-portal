@@ -40,23 +40,15 @@
                 <form action="{{ route('student.login.attempt') }}" method="POST" class="space-y-5 p-6 sm:p-9">
                     @csrf
 
-                    <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                        <p class="font-extrabold">{{ __('student.login.demo_title') }}</p>
-                        <div class="mt-2 flex flex-wrap gap-x-5 gap-y-1 font-semibold">
-                            <span>{{ __('student.login.student_id') }}: <strong class="select-all">demo</strong></span>
-                            <span>{{ __('student.login.password') }}: <strong class="select-all">1</strong></span>
-                        </div>
-                    </div>
-
                     <div>
-                        <label for="student_id" class="text-sm font-extrabold text-slate-700">{{ __('student.login.student_id') }} <span class="text-red-500">*</span></label>
+                        <label for="login" class="text-sm font-extrabold text-slate-700">{{ __('student.login.identifier') }} <span class="text-red-500">*</span></label>
                         <div class="relative mt-2">
                             <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M14 10h4M14 14h4"/></svg>
-                            <input id="student_id" name="student_id" value="{{ old('student_id') }}" autocomplete="username" autofocus required
-                                placeholder="{{ __('student.login.student_id_placeholder') }}"
-                                class="w-full rounded-xl border bg-white py-3.5 pl-12 pr-4 text-sm font-bold outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:ring-4 {{ $errors->has('student_id') ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100' }}">
+                            <input id="login" name="login" value="{{ old('login') }}" autocomplete="username" autofocus required
+                                placeholder="{{ __('student.login.identifier_placeholder') }}"
+                                class="w-full rounded-xl border bg-white py-3.5 pl-12 pr-4 text-sm font-bold outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:ring-4 {{ $errors->has('login') ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100' }}">
                         </div>
-                        @error('student_id')<p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>@enderror
+                        @error('login')<p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
@@ -84,6 +76,13 @@
                             <p>{{ __('student.login.note') }}</p>
                         </div>
                     </div>
+
+                    <p class="text-center text-sm font-semibold text-slate-600">
+                        {{ __('student.login.no_account') }}
+                        <a href="{{ route('student.register') }}" class="font-extrabold text-blue-700 hover:text-blue-900">
+                            {{ __('student.login.register_link') }}
+                        </a>
+                    </p>
                 </form>
             </section>
         </div>

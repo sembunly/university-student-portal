@@ -1,7 +1,13 @@
 <?php
 
+use App\Http\Controllers\CommuneController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\StudentAuthController;
+use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentRegistrationController;
+use App\Http\Controllers\VillageController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
 Route::redirect('/', '/student/login');
 
@@ -13,57 +19,42 @@ Route::get('/language/{locale}', function (string $locale) {
     return back();
 })->name('language.switch');
 
-Route::view('/student/login', 'student.login')->name('student.login');
+Route::middleware('guest')->group(function () {
+    Route::get('/student/login', [StudentAuthController::class, 'showLogin'])
+        ->name('student.login');
+    Route::post('/student/login', [StudentAuthController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('student.login.attempt');
+    Route::get('/student/register', [StudentAuthController::class, 'showRegister'])
+        ->name('student.register');
+    Route::post('/student/register', [StudentAuthController::class, 'register'])
+        ->middleware('throttle:5,1')
+        ->name('student.register.store');
+});
 
-Route::post('/student/login', function (Request $request) {
-    $credentials = $request->validate([
-        'student_id' => ['required', 'string'],
-        'password' => ['required', 'string'],
-    ]);
+Route::post('/logout', [StudentAuthController::class, 'logout'])
+    ->middleware('student.auth')
+    ->name('student.logout');
 
-    if ($credentials['student_id'] !== 'demo' || $credentials['password'] !== '1') {
-        return back()
-            ->withErrors(['student_id' => __('student.login.invalid')])
-            ->onlyInput('student_id');
-    }
-
-    $request->session()->regenerate();
-    $request->session()->put([
-        'student_demo_authenticated' => true,
-        'student_demo_id' => 'demo',
-    ]);
-
-    return to_route('student.dashboard');
-})->name('student.login.attempt');
-
-Route::post('/logout', function (Request $request) {
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return to_route('student.login');
-})->name('student.logout');
-
-Route::middleware('student.demo.auth')->group(function () {
-    Route::view('/student/dashboard', 'student.dashboard')
+Route::middleware('student.auth')->group(function () {
+    Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
         ->name('student.dashboard');
 
-    Route::view('/student/information/edit', 'student.update-student-information')
+    Route::get('/student/information/edit', [StudentRegistrationController::class, 'edit'])
         ->name('student.information.edit');
 
-    Route::view('/student/information', 'student.student-information')
+    Route::get('/student/information', [StudentRegistrationController::class, 'show'])
         ->name('student.information.show');
 
-    Route::post('/student/information', function (Request $request) {
-        $request->validate([
-            'name_km' => ['required', 'string', 'max:100'],
-            'name_en' => ['required', 'string', 'max:100'],
-            'gender' => ['required', 'in:ប្រុស,ស្រី'],
-            'phone' => ['required', 'string', 'max:20'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'declaration' => ['accepted'],
-        ]);
+    Route::put('/student/information', [StudentRegistrationController::class, 'update'])
+        ->name('student.information.update');
 
-        return to_route('student.information.edit')
-            ->with('success', 'ព័ត៌មាននិស្សិតត្រូវបានផ្ទៀងផ្ទាត់ដោយជោគជ័យ។');
-    })->name('student.information.update');
+    Route::get('/address/provinces', [ProvinceController::class, 'index'])
+        ->name('address.provinces');
+    Route::get('/address/provinces/{province}/districts', [DistrictController::class, 'index'])
+        ->name('address.districts');
+    Route::get('/address/districts/{district}/communes', [CommuneController::class, 'index'])
+        ->name('address.communes');
+    Route::get('/address/communes/{commune}/villages', [VillageController::class, 'index'])
+        ->name('address.villages');
 });

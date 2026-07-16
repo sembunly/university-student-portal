@@ -6,22 +6,46 @@
 @section('content')
     @php
         $student = $student ?? [
-            'name_km' => 'សែម ប៊ុនលី',
-            'name_en' => 'SEM BUNLY',
-            'student_id' => '00058475',
-            'phone' => '010 800 921',
-            'email' => 'sembunly.biu@gmail.com',
-            'date_of_birth' => '2005-01-14',
-            'gender' => 'ប្រុស',
-            'nationality' => 'ខ្មែរ',
-            'faculty' => 'ព័ត៌មានវិទ្យា និងវិទ្យាសាស្ត្រ',
-            'major' => 'វិស្វកម្មសុហ្វវែរ',
-            'degree' => 'បរិញ្ញាបត្រ',
-            'year' => 'ឆ្នាំទី ២',
-            'semester' => 'ឆមាសទី ១',
-            'campus' => 'ទីតាំងទី ១',
-            'address' => 'ភូមិសន្សំកុសល សង្កាត់បឹងទំពុនទី១ ខណ្ឌមានជ័យ រាជធានីភ្នំពេញ',
-            'avatar' => null,
+            'name_km' => '',
+            'name_en' => '',
+            'student_id' => $studentId ?? 'នឹងបង្កើតបន្ទាប់ពីរក្សាទុក',
+            'phone' => $accountPhone ?? '',
+            'email' => '',
+            'date_of_birth' => null,
+            'gender' => '',
+            'nationality' => '',
+            'current_province_id' => null,
+            'current_district_id' => null,
+            'current_commune_id' => null,
+            'current_village_id' => null,
+            'current_house' => null,
+            'current_street' => null,
+            'permanent_province_id' => null,
+            'permanent_district_id' => null,
+            'permanent_commune_id' => null,
+            'permanent_village_id' => null,
+            'permanent_house' => null,
+            'permanent_street' => null,
+            'father_name' => '',
+            'father_occupation' => '',
+            'father_phone' => '',
+            'mother_name' => '',
+            'mother_occupation' => '',
+            'mother_phone' => '',
+            'emergency_name' => '',
+            'emergency_phone' => '',
+            'high_school' => '',
+            'graduation_year' => null,
+            'education_province_id' => null,
+        ];
+        $dateOfBirth = data_get($student, 'date_of_birth');
+        if ($dateOfBirth instanceof \DateTimeInterface) {
+            $dateOfBirth = $dateOfBirth->format('Y-m-d');
+        }
+        $provinces = $provinces ?? collect();
+        $addressOptions = $addressOptions ?? [
+            'current' => ['districts' => collect(), 'communes' => collect(), 'villages' => collect()],
+            'permanent' => ['districts' => collect(), 'communes' => collect(), 'villages' => collect()],
         ];
         $inputClass = 'mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100';
         $labelClass = 'text-sm font-bold text-slate-700';
@@ -46,8 +70,15 @@
         </div>
     @endif
 
+    @if(session('success'))
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700" role="status">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <form action="{{ route('student.information.update') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
+        @method('PUT')
 
         <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             <div class="flex items-center gap-3 border-b border-slate-200 bg-blue-50/70 px-5 py-4 sm:px-6">
@@ -75,7 +106,7 @@
                 </div>
                 <div>
                     <label for="date_of_birth" class="{{ $labelClass }}">ថ្ងៃខែឆ្នាំកំណើត</label>
-                    <input id="date_of_birth" name="date_of_birth" type="date" value="{{ old('date_of_birth', $student['date_of_birth']) }}" class="{{ $inputClass }}">
+                    <input id="date_of_birth" name="date_of_birth" type="date" value="{{ old('date_of_birth', $dateOfBirth) }}" class="{{ $inputClass }}">
                 </div>
                 <fieldset>
                     <legend class="{{ $labelClass }}">ភេទ <span class="text-red-500">*</span></legend>
@@ -91,13 +122,14 @@
                 <div>
                     <label for="nationality" class="{{ $labelClass }}">សញ្ជាតិ</label>
                     <select id="nationality" name="nationality" class="{{ $inputClass }}">
-                        <option @selected(old('nationality', $student['nationality']) === 'ខ្មែរ')>ខ្មែរ</option>
-                        <option>ផ្សេងៗ</option>
+                        <option value="">សូមជ្រើសរើស</option>
+                        <option value="ខ្មែរ" @selected(old('nationality', $student['nationality']) === 'ខ្មែរ')>ខ្មែរ</option>
+                        <option value="ផ្សេងៗ" @selected(old('nationality', $student['nationality']) === 'ផ្សេងៗ')>ផ្សេងៗ</option>
                     </select>
                 </div>
                 <div>
                     <label for="phone" class="{{ $labelClass }}">លេខទូរស័ព្ទ <span class="text-red-500">*</span></label>
-                    <input id="phone" name="phone" type="tel" value="{{ old('phone', $student['phone']) }}" class="{{ $inputClass }}" required>
+                    <input id="phone" name="phone" type="tel" value="{{ $student['phone'] }}" class="{{ $inputClass }} bg-slate-100 text-slate-500" readonly required>
                 </div>
                 <div>
                     <label for="email" class="{{ $labelClass }}">អ៊ីមែល</label>
@@ -122,28 +154,56 @@
                         <legend class="px-2 text-sm font-extrabold text-blue-900">{{ $address['title'] }}</legend>
                         <div class="grid gap-5 lg:grid-cols-2">
                             <div>
-                                <label class="{{ $labelClass }}">រាជធានី/ខេត្ត <span class="text-red-500">*</span></label>
-                                <select name="{{ $address['prefix'] }}_province" class="{{ $inputClass }}"><option>ភ្នំពេញ</option><option>កណ្ដាល</option><option>សៀមរាប</option></select>
+                                <label for="{{ $address['prefix'] }}_province_id" class="{{ $labelClass }}">រាជធានី/ខេត្ត <span class="text-red-500">*</span></label>
+                                <select id="{{ $address['prefix'] }}_province_id" name="{{ $address['prefix'] }}_province_id" data-address-level="province" data-prefix="{{ $address['prefix'] }}" class="{{ $inputClass }}" required>
+                                    <option value="">សូមជ្រើសរើស</option>
+                                    @foreach($provinces as $province)
+                                        <option value="{{ $province->id }}" @selected((string) old($address['prefix'].'_province_id', data_get($student, $address['prefix'].'_province_id')) === (string) $province->id)>
+                                            {{ $province->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
-                                <label class="{{ $labelClass }}">ក្រុង/ស្រុក/ខណ្ឌ <span class="text-red-500">*</span></label>
-                                <select name="{{ $address['prefix'] }}_district" class="{{ $inputClass }}"><option>មានជ័យ</option><option>ចំការមន</option><option>សែនសុខ</option></select>
+                                <label for="{{ $address['prefix'] }}_district_id" class="{{ $labelClass }}">ក្រុង/ស្រុក/ខណ្ឌ <span class="text-red-500">*</span></label>
+                                <select id="{{ $address['prefix'] }}_district_id" name="{{ $address['prefix'] }}_district_id" data-address-level="district" data-prefix="{{ $address['prefix'] }}" class="{{ $inputClass }}" required>
+                                    <option value="">សូមជ្រើសរើស</option>
+                                    @foreach($addressOptions[$address['prefix']]['districts'] as $district)
+                                        <option value="{{ $district->id }}" @selected((string) old($address['prefix'].'_district_id', data_get($student, $address['prefix'].'_district_id')) === (string) $district->id)>
+                                            {{ $district->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
-                                <label class="{{ $labelClass }}">ឃុំ/សង្កាត់ <span class="text-red-500">*</span></label>
-                                <select name="{{ $address['prefix'] }}_commune" class="{{ $inputClass }}"><option>បឹងទំពុនទី១</option><option>បឹងទំពុនទី២</option></select>
+                                <label for="{{ $address['prefix'] }}_commune_id" class="{{ $labelClass }}">ឃុំ/សង្កាត់ <span class="text-red-500">*</span></label>
+                                <select id="{{ $address['prefix'] }}_commune_id" name="{{ $address['prefix'] }}_commune_id" data-address-level="commune" data-prefix="{{ $address['prefix'] }}" class="{{ $inputClass }}" required>
+                                    <option value="">សូមជ្រើសរើស</option>
+                                    @foreach($addressOptions[$address['prefix']]['communes'] as $commune)
+                                        <option value="{{ $commune->id }}" @selected((string) old($address['prefix'].'_commune_id', data_get($student, $address['prefix'].'_commune_id')) === (string) $commune->id)>
+                                            {{ $commune->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
-                                <label class="{{ $labelClass }}">ភូមិ <span class="text-red-500">*</span></label>
-                                <input name="{{ $address['prefix'] }}_village" value="សន្សំកុសល" class="{{ $inputClass }}">
+                                <label for="{{ $address['prefix'] }}_village_id" class="{{ $labelClass }}">ភូមិ <span class="text-red-500">*</span></label>
+                                <select id="{{ $address['prefix'] }}_village_id" name="{{ $address['prefix'] }}_village_id" data-address-level="village" data-prefix="{{ $address['prefix'] }}" class="{{ $inputClass }}" required>
+                                    <option value="">សូមជ្រើសរើស</option>
+                                    @foreach($addressOptions[$address['prefix']]['villages'] as $village)
+                                        <option value="{{ $village->id }}" @selected((string) old($address['prefix'].'_village_id', data_get($student, $address['prefix'].'_village_id')) === (string) $village->id)>
+                                            {{ $village->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
-                                <label class="{{ $labelClass }}">លេខផ្ទះ</label>
-                                <input name="{{ $address['prefix'] }}_house" class="{{ $inputClass }}">
+                                <label for="{{ $address['prefix'] }}_house" class="{{ $labelClass }}">លេខផ្ទះ</label>
+                                <input id="{{ $address['prefix'] }}_house" name="{{ $address['prefix'] }}_house" value="{{ old($address['prefix'].'_house', data_get($student, $address['prefix'].'_house')) }}" class="{{ $inputClass }}">
                             </div>
                             <div>
-                                <label class="{{ $labelClass }}">លេខផ្លូវ</label>
-                                <input name="{{ $address['prefix'] }}_street" class="{{ $inputClass }}">
+                                <label for="{{ $address['prefix'] }}_street" class="{{ $labelClass }}">លេខផ្លូវ</label>
+                                <input id="{{ $address['prefix'] }}_street" name="{{ $address['prefix'] }}_street" value="{{ old($address['prefix'].'_street', data_get($student, $address['prefix'].'_street')) }}" class="{{ $inputClass }}">
                             </div>
                         </div>
                     </fieldset>
@@ -160,24 +220,24 @@
             </div>
             <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-2">
                 @foreach([
-                    ['title' => 'ព័ត៌មានឪពុក', 'prefix' => 'father', 'name' => 'Test', 'phone' => '096 776 256'],
-                    ['title' => 'ព័ត៌មានម្ដាយ', 'prefix' => 'mother', 'name' => 'Test', 'phone' => '069 800 921'],
+                    ['title' => 'ព័ត៌មានឪពុក', 'prefix' => 'father'],
+                    ['title' => 'ព័ត៌មានម្ដាយ', 'prefix' => 'mother'],
                 ] as $guardian)
                     <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5">
                         <legend class="px-2 text-sm font-extrabold text-blue-900">{{ $guardian['title'] }}</legend>
                         <div class="space-y-4">
                             <div>
                                 <label class="{{ $labelClass }}">គោត្តនាម និងនាម</label>
-                                <input name="{{ $guardian['prefix'] }}_name" value="{{ $guardian['name'] }}" class="{{ $inputClass }}">
+                                <input name="{{ $guardian['prefix'] }}_name" value="{{ old($guardian['prefix'].'_name', data_get($student, $guardian['prefix'].'_name')) }}" class="{{ $inputClass }}">
                             </div>
                             <div class="grid gap-4 sm:grid-cols-2">
                                 <div>
                                     <label class="{{ $labelClass }}">មុខរបរ</label>
-                                    <input name="{{ $guardian['prefix'] }}_occupation" value="Test" class="{{ $inputClass }}">
+                                    <input name="{{ $guardian['prefix'] }}_occupation" value="{{ old($guardian['prefix'].'_occupation', data_get($student, $guardian['prefix'].'_occupation')) }}" class="{{ $inputClass }}">
                                 </div>
                                 <div>
                                     <label class="{{ $labelClass }}">លេខទូរស័ព្ទ</label>
-                                    <input name="{{ $guardian['prefix'] }}_phone" value="{{ $guardian['phone'] }}" class="{{ $inputClass }}">
+                                    <input name="{{ $guardian['prefix'] }}_phone" value="{{ old($guardian['prefix'].'_phone', data_get($student, $guardian['prefix'].'_phone')) }}" class="{{ $inputClass }}">
                                 </div>
                             </div>
                         </div>
@@ -185,11 +245,11 @@
                 @endforeach
                 <div>
                     <label for="emergency_name" class="{{ $labelClass }}">ឈ្មោះអ្នកទំនាក់ទំនងបន្ទាន់ <span class="text-red-500">*</span></label>
-                    <input id="emergency_name" name="emergency_name" value="Test" class="{{ $inputClass }}">
+                    <input id="emergency_name" name="emergency_name" value="{{ old('emergency_name', data_get($student, 'emergency_name')) }}" class="{{ $inputClass }}" required>
                 </div>
                 <div>
                     <label for="emergency_phone" class="{{ $labelClass }}">លេខទូរស័ព្ទបន្ទាន់ <span class="text-red-500">*</span></label>
-                    <input id="emergency_phone" name="emergency_phone" value="069 800 921" class="{{ $inputClass }}">
+                    <input id="emergency_phone" name="emergency_phone" value="{{ old('emergency_phone', data_get($student, 'emergency_phone')) }}" class="{{ $inputClass }}" required>
                 </div>
             </div>
         </section>
@@ -204,17 +264,27 @@
             <div class="grid gap-5 p-5 sm:p-6 lg:grid-cols-2">
                 <div>
                     <label for="high_school" class="{{ $labelClass }}">ឈ្មោះវិទ្យាល័យ</label>
-                    <input id="high_school" name="high_school" value="វិទ្យាល័យ ប៊ុន រ៉ានី ហ៊ុន សែន" class="{{ $inputClass }}">
+                    <input id="high_school" name="high_school" value="{{ old('high_school', data_get($student, 'high_school')) }}" class="{{ $inputClass }}">
                 </div>
                 <div>
                     <label for="graduation_year" class="{{ $labelClass }}">ឆ្នាំបញ្ចប់ការសិក្សា</label>
                     <select id="graduation_year" name="graduation_year" class="{{ $inputClass }}">
-                        @foreach(range(date('Y'), 2015) as $year)<option @selected($year === 2023)>{{ $year }}</option>@endforeach
+                        <option value="">សូមជ្រើសរើស</option>
+                        @foreach(range(date('Y'), 1950) as $year)
+                            <option value="{{ $year }}" @selected((string) old('graduation_year', data_get($student, 'graduation_year')) === (string) $year)>{{ $year }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
-                    <label for="education_province" class="{{ $labelClass }}">រាជធានី/ខេត្តនៃវិទ្យាល័យ</label>
-                    <select id="education_province" name="education_province" class="{{ $inputClass }}"><option>កណ្ដាល</option><option>ភ្នំពេញ</option></select>
+                    <label for="education_province_id" class="{{ $labelClass }}">រាជធានី/ខេត្តនៃវិទ្យាល័យ</label>
+                    <select id="education_province_id" name="education_province_id" class="{{ $inputClass }}">
+                        <option value="">សូមជ្រើសរើស</option>
+                        @foreach($provinces as $province)
+                            <option value="{{ $province->id }}" @selected((string) old('education_province_id', data_get($student, 'education_province_id')) === (string) $province->id)>
+                                {{ $province->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div>
                     <label for="certificate" class="{{ $labelClass }}">ឯកសារបញ្ជាក់ការសិក្សា</label>
@@ -241,5 +311,72 @@
                 រក្សាទុកការកែប្រែ
             </button>
         </div>
-    </form>
+</form>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const endpoints = {
+                district: @json(url('/address/provinces/{id}/districts')),
+                commune: @json(url('/address/districts/{id}/communes')),
+                village: @json(url('/address/communes/{id}/villages')),
+            };
+
+            const emptyOption = 'សូមជ្រើសរើស';
+
+            const clearSelect = (select) => {
+                select.replaceChildren(new Option(emptyOption, ''));
+            };
+
+            const loadOptions = async (select, level, parentId) => {
+                clearSelect(select);
+
+                if (!parentId) return;
+
+                select.disabled = true;
+
+                try {
+                    const response = await fetch(endpoints[level].replace('{id}', parentId), {
+                        headers: { Accept: 'application/json' },
+                    });
+
+                    if (!response.ok) throw new Error('Unable to load address options.');
+
+                    const options = await response.json();
+
+                    options.forEach((item) => {
+                        select.add(new Option(item.name, item.id));
+                    });
+                } catch (error) {
+                    clearSelect(select);
+                    console.error(error);
+                } finally {
+                    select.disabled = false;
+                }
+            };
+
+            ['current', 'permanent'].forEach((prefix) => {
+                const province = document.getElementById(`${prefix}_province_id`);
+                const district = document.getElementById(`${prefix}_district_id`);
+                const commune = document.getElementById(`${prefix}_commune_id`);
+                const village = document.getElementById(`${prefix}_village_id`);
+
+                province.addEventListener('change', async () => {
+                    clearSelect(commune);
+                    clearSelect(village);
+                    await loadOptions(district, 'district', province.value);
+                });
+
+                district.addEventListener('change', async () => {
+                    clearSelect(village);
+                    await loadOptions(commune, 'commune', district.value);
+                });
+
+                commune.addEventListener('change', () => {
+                    loadOptions(village, 'village', commune.value);
+                });
+            });
+        });
+    </script>
+@endpush

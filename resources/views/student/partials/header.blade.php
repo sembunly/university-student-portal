@@ -1,3 +1,10 @@
+@php
+    $localizedStudentName = app()->isLocale('en') ? data_get($student, 'name_en') : data_get($student, 'name_km');
+    $studentDisplayName = filled($localizedStudentName)
+        ? $localizedStudentName
+        : (data_get($student, 'student_id') !== '—' ? data_get($student, 'student_id') : data_get($student, 'phone'));
+@endphp
+
 <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur sm:px-6 lg:px-8">
     <div class="flex items-center gap-3">
         <button id="openSidebar" type="button" aria-label="{{ __('student.common.open_menu') }}" aria-controls="studentSidebar" aria-expanded="false"
@@ -22,7 +29,7 @@
             <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
         </button>
         <div class="hidden text-right sm:block">
-            <p class="text-sm font-bold text-slate-800">{{ app()->isLocale('en') ? $student['name_en'] : $student['name_km'] }}</p>
+            <p class="text-sm font-bold text-slate-800">{{ $studentDisplayName }}</p>
             <p class="text-xs text-slate-500">{{ __('student.STUDENT') }}</p>
         </div>
     </div>
