@@ -6,17 +6,17 @@
 @endphp
 
 <aside id="studentSidebar"
-    class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:w-80 lg:translate-x-0">
-    <div class="flex h-24 items-center gap-3 border-b border-slate-100 px-5">
-        <div class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-blue-950 text-white shadow-lg shadow-blue-900/15">
-            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col border-r border-slate-200/70 bg-white transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:w-[292px] lg:translate-x-0">
+    <div class="flex h-[92px] items-center gap-3 px-5">
+        <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-600/20">
+            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <path d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z"/>
                 <path d="M7 10.5V15c2.6 2 7.4 2 10 0v-4.5M21 9v6"/>
             </svg>
         </div>
         <div class="min-w-0">
-            <p class="truncate text-base font-extrabold text-slate-900">{{ __('student.common.university') }}</p>
-            <p class="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">{{ __('student.common.portal') }}</p>
+            <p class="truncate text-base font-black text-slate-900">{{ __('student.common.university') }}</p>
+            <p class="mt-0.5 text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-500">{{ __('student.common.portal') }}</p>
         </div>
         <button id="closeSidebar" type="button" aria-label="{{ __('student.common.close_menu') }}"
             class="ml-auto rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden">
@@ -24,18 +24,18 @@
         </button>
     </div>
 
-    <div class="m-4 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5">
+    <div class="mx-4 mb-6 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3">
         @if(!empty($student['avatar']))
             <img src="{{ $student['avatar'] }}" alt="{{ __('student.common.photo_of', ['name' => $studentDisplayName]) }}"
-                class="h-16 w-16 rounded-xl object-cover ring-2 ring-white">
+                class="h-12 w-12 rounded-xl object-cover ring-2 ring-white">
         @else
-            <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-blue-100 text-xl font-extrabold text-blue-700 ring-2 ring-white">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-indigo-100 text-lg font-black text-indigo-700 ring-2 ring-white">
                 {{ mb_substr($studentDisplayName, 0, 1) }}
             </div>
         @endif
         <div class="min-w-0">
-            <p class="truncate font-extrabold text-slate-900">{{ $studentDisplayName }}</p>
-            <p class="mt-1 text-sm font-medium text-slate-500">{{ $student['student_id'] }}</p>
+            <p class="truncate text-sm font-black text-slate-900">{{ $studentDisplayName }}</p>
+            <p class="mt-1 text-xs font-semibold text-slate-400">{{ $student['student_id'] }}</p>
         </div>
     </div>
 
@@ -47,10 +47,14 @@
     @endphp
 
     <nav class="flex-1 space-y-1.5 overflow-y-auto px-4 pb-5" aria-label="{{ __('student.common.student_menu') }}">
+        <p class="mb-3 px-3 text-[10px] font-extrabold uppercase tracking-[.18em] text-slate-400">{{ __('student.common.student_menu') }}</p>
         @foreach($studentMenu as $item)
             <a href="{{ $item['href'] }}" @if(!empty($item['active'])) aria-current="page" @endif
-                class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition
-                    {{ !empty($item['active']) ? 'bg-blue-700 text-white shadow-md shadow-blue-700/20' : 'text-slate-500 hover:bg-blue-50 hover:text-blue-700' }}">
+                class="group relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-extrabold transition
+                    {{ !empty($item['active']) ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                @if(!empty($item['active']))
+                    <span class="absolute -left-4 h-6 w-1 rounded-r-full bg-indigo-600" aria-hidden="true"></span>
+                @endif
                 @if($item['icon'] === 'home')
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg>
                 @elseif($item['icon'] === 'user')
@@ -70,7 +74,7 @@
     <div class="border-t border-slate-100 p-4">
         <form action="{{ route('student.logout') }}" method="POST">
             @csrf
-            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-extrabold text-slate-800 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-extrabold text-slate-700 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"/></svg>
                 {{ __('student.common.logout') }}
             </button>

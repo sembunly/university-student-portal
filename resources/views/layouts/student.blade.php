@@ -8,19 +8,19 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-slate-50 {{ app()->isLocale('en') ? 'font-en' : 'font-sans' }} text-slate-800 antialiased">
+<body class="bg-[#f5f7fb] {{ app()->isLocale('en') ? 'font-en' : 'font-sans' }} text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
     @include('student.partials.page-loader')
 
     <div class="min-h-screen lg:flex">
-        <button id="sidebarOverlay" type="button" aria-label="បិទម៉ឺនុយ"
-            class="fixed inset-0 z-40 hidden bg-slate-950/40 backdrop-blur-[1px] lg:hidden"></button>
+        <button id="sidebarOverlay" type="button" aria-label="{{ __('student.common.close_menu') }}"
+            class="fixed inset-0 z-40 hidden bg-slate-950/50 backdrop-blur-sm lg:hidden"></button>
 
         @include('student.partials.sidebar')
 
         <main class="min-w-0 flex-1">
             @include('student.partials.header')
 
-            <div class="mx-auto max-w-[1500px] space-y-5 p-4 sm:p-6 lg:p-8">
+            <div class="mx-auto max-w-[1520px] space-y-5 p-4 sm:p-6 lg:p-8 xl:space-y-6 xl:p-9">
                 @if(session('success'))
                     <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700" role="alert">
                         {{ session('success') }}

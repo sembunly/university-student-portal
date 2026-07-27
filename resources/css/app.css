@@ -58,6 +58,46 @@
     100% { transform: translateX(220%); }
 }
 
+.dashboard-grid {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(to right, transparent, black 30%, black);
+}
+
+.profile-ring {
+    background: conic-gradient(#818cf8 var(--progress), rgba(255, 255, 255, .12) 0deg);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 12px 35px rgba(0, 0, 0, .22);
+}
+
+@keyframes dashboard-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+main > div > section {
+    animation: dashboard-enter .45s ease-out both;
+}
+
+main > div > section:nth-of-type(2) {
+    animation-delay: .06s;
+}
+
+main > div > section:nth-of-type(3) {
+    animation-delay: .12s;
+}
+
 @media (prefers-reduced-motion: reduce) {
     #pageLoader * { animation-duration: 1s !important; }
+
+    main > div > section {
+        animation: none;
+    }
 }
