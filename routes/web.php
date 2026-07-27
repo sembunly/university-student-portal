@@ -40,6 +40,9 @@ Route::middleware('student.auth')->group(function () {
     Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
         ->name('student.dashboard');
 
+    Route::get('/student/curriculum', [StudentDashboardController::class, 'curriculum'])
+        ->name('student.curriculum');
+
     Route::get('/student/information/edit', [StudentRegistrationController::class, 'edit'])
         ->name('student.information.edit');
 
