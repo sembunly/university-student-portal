@@ -24,7 +24,7 @@
         </button>
     </div>
 
-    <div class="mx-4 mb-6 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3">
+    <!-- <div class="mx-4 mb-6 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3">
         @if(!empty($student['avatar']))
             <img src="{{ $student['avatar'] }}" alt="{{ __('student.common.photo_of', ['name' => $studentDisplayName]) }}"
                 class="h-12 w-12 rounded-xl object-cover ring-2 ring-white">
@@ -37,12 +37,13 @@
             <p class="truncate text-sm font-black text-slate-900">{{ $studentDisplayName }}</p>
             <p class="mt-1 text-xs font-semibold text-slate-400">{{ $student['student_id'] }}</p>
         </div>
-    </div>
+    </div> -->
 
     @php
         $studentMenu = [
             ['label' => __('student.nav.home'), 'href' => route('student.dashboard'), 'icon' => 'home', 'active' => request()->routeIs('student.dashboard')],
             ['label' => __('student.nav.personal_information'), 'href' => route('student.information.show'), 'icon' => 'user', 'active' => request()->routeIs('student.information.*')],
+            ['label' => __('student.nav.curriculum'), 'href' => route('student.curriculum'), 'icon' => 'curriculum', 'active' => request()->routeIs('student.curriculum')],
         ];
     @endphp
 
@@ -59,6 +60,8 @@
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg>
                 @elseif($item['icon'] === 'user')
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                @elseif($item['icon'] === 'curriculum')
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5Z"/></svg>
                 @elseif($item['icon'] === 'eye')
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg>
                 @elseif($item['icon'] === 'history')
