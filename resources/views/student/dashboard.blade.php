@@ -50,10 +50,10 @@
                     {{ __('student.dashboard.greeting', ['name' => $dashboardName]) }}
                 </h2>
                 <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                    {{ $hasRegistration
+                    <!-- {{ $hasRegistration
                         ? __('student.dashboard.registered_message')
                         : __('student.dashboard.unregistered_message') }}
-                </p>
+                </p> -->
                 <div class="mt-7 flex flex-wrap items-center gap-3">
                     <a href="{{ $informationRoute }}"
                         class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-extrabold text-slate-950 shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:bg-indigo-50 focus:outline-none focus:ring-4 focus:ring-white/20">
