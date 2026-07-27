@@ -11,10 +11,32 @@ class StudentDashboardController extends Controller
 {
     public function index(Request $request): View
     {
+        [$account, $registration] = $this->studentProfile($request);
+
+        return view('student.dashboard', [
+            'student' => $this->studentData($registration, $account->student_id, $account->phone),
+            'hasRegistration' => $registration !== null,
+            'profileCompletion' => $this->profileCompletion($registration),
+        ]);
+    }
+
+    public function curriculum(Request $request): View
+    {
+        [$account, $registration] = $this->studentProfile($request);
+
+        return view('student.curriculum', [
+            'student' => $this->studentData($registration, $account->student_id, $account->phone),
+        ]);
+    }
+
+    /**
+     * @return array{StudentAccount, StudentRegistration|null}
+     */
+    private function studentProfile(Request $request): array
+    {
         $account = StudentAccount::query()->findOrFail(
             $request->session()->get('student_account_id'),
         );
-        $studentId = $account->student_id;
         $registration = StudentRegistration::query()
             ->with([
                 'currentProvince:id,name',
@@ -22,14 +44,10 @@ class StudentDashboardController extends Controller
                 'currentCommune:id,name',
                 'currentVillage:id,name',
             ])
-            ->where('student_id', $studentId)
+            ->where('student_id', $account->student_id)
             ->first();
 
-        return view('student.dashboard', [
-            'student' => $this->studentData($registration, $studentId, $account->phone),
-            'hasRegistration' => $registration !== null,
-            'profileCompletion' => $this->profileCompletion($registration),
-        ]);
+        return [$account, $registration];
     }
 
     /**
