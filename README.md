@@ -1,3 +1,48 @@
+# USP Student Portal
+
+Laravel web portal with a versioned REST API for the Flutter student app.
+
+## Flutter API v1
+
+Run the application and migrations:
+
+```bash
+php artisan migrate
+php artisan serve
+```
+
+Open Swagger UI at `http://127.0.0.1:8000/api/documentation`. The raw OpenAPI
+document is available at `http://127.0.0.1:8000/openapi/v1.json`.
+
+The API base URL is `/api/v1`. Register or log in, save `data.token` securely,
+and send it on protected calls:
+
+```http
+Authorization: Bearer YOUR_TOKEN
+Accept: application/json
+```
+
+For an Android emulator, use `http://10.0.2.2:8000/api/v1`; for iOS Simulator,
+use `http://127.0.0.1:8000/api/v1`. A physical device must use the computer's
+LAN address, and Laravel must listen on the network:
+
+```bash
+php artisan serve --host=0.0.0.0
+```
+
+Main endpoints:
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `GET /auth/me`
+- `POST /auth/logout`
+- `GET /profile`
+- `POST /profile` (recommended for multipart certificate uploads)
+- `PUT /profile` (JSON)
+- address lookup endpoints under `/addresses`
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

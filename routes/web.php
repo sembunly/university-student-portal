@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/student/login');
 
+Route::view('/api/documentation', 'api.documentation')
+    ->name('api.documentation');
+
 Route::get('/language/{locale}', function (string $locale) {
     abort_unless(in_array($locale, ['km', 'en'], true), 404);
 
