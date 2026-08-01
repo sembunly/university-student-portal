@@ -1,8 +1,8 @@
 # USP Student Portal
 
-Laravel web portal with a versioned REST API for the Flutter student app.
+Laravel web portal with a versioned REST API for the student app.
 
-## Flutter API v1
+## API v1
 
 Run the application and migrations:
 

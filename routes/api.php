@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\StudentDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
@@ -31,5 +32,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->name('addresses.communes');
         Route::get('/addresses/communes/{commune}/villages', [AddressController::class, 'villages'])
             ->name('addresses.villages');
+    });
+
+    Route::middleware('student.auth')->group(function (): void {
+        Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
+            ->name('student.dashboard');
+        Route::get('/student/curriculum', [StudentDashboardController::class, 'curriculum'])
+            ->name('student.curriculum');
     });
 });
