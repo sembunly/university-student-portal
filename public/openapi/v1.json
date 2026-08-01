@@ -1,0 +1,445 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "USP Student API",
+    "version": "1.0.0",
+    "description": "REST API v1 for the USP Flutter student application. Authenticate once, then send `Authorization: Bearer <token>` on protected requests."
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Current server"
+    }
+  ],
+  "tags": [
+    {"name": "System"},
+    {"name": "Authentication"},
+    {"name": "Profile"},
+    {"name": "Addresses"}
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "API health check",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {"data": {"status": "ok", "version": "v1"}}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a student account",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/RegisterRequest"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/TokenResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"},
+          "429": {"$ref": "#/components/responses/TooManyRequests"}
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Log in with phone number or student ID",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/LoginRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/TokenResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"},
+          "429": {"$ref": "#/components/responses/TooManyRequests"}
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get the authenticated account",
+        "responses": {
+          "200": {
+            "description": "Account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {"data": {"$ref": "#/components/schemas/Account"}}
+                }
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Unauthenticated"}
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Revoke the current device token",
+        "responses": {
+          "200": {
+            "description": "Logged out",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Message"}
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Unauthenticated"}
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "tags": ["Profile"],
+        "summary": "Get the student account and profile",
+        "responses": {
+          "200": {
+            "description": "Profile is null until it has been completed",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/ProfileResponse"}
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Unauthenticated"}
+        }
+      },
+      "post": {
+        "tags": ["Profile"],
+        "summary": "Create or update the student profile",
+        "description": "Use POST with multipart/form-data from Flutter when uploading a certificate. The API also accepts PUT for JSON requests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {"$ref": "#/components/schemas/ProfileRequest"}
+            },
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ProfileRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile saved",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/ProfileResponse"}
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Unauthenticated"},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      },
+      "put": {
+        "tags": ["Profile"],
+        "summary": "Create or update the student profile using JSON",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ProfileRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile saved",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/ProfileResponse"}
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Unauthenticated"},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/addresses/provinces": {
+      "get": {
+        "tags": ["Addresses"],
+        "summary": "List active provinces",
+        "responses": {
+          "200": {"$ref": "#/components/responses/LocationList"},
+          "401": {"$ref": "#/components/responses/Unauthenticated"}
+        }
+      }
+    },
+    "/addresses/provinces/{province}/districts": {
+      "get": {
+        "tags": ["Addresses"],
+        "summary": "List active districts in a province",
+        "parameters": [{"$ref": "#/components/parameters/ProvinceId"}],
+        "responses": {
+          "200": {"$ref": "#/components/responses/LocationList"},
+          "401": {"$ref": "#/components/responses/Unauthenticated"},
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    },
+    "/addresses/districts/{district}/communes": {
+      "get": {
+        "tags": ["Addresses"],
+        "summary": "List active communes in a district",
+        "parameters": [{"$ref": "#/components/parameters/DistrictId"}],
+        "responses": {
+          "200": {"$ref": "#/components/responses/LocationList"},
+          "401": {"$ref": "#/components/responses/Unauthenticated"},
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    },
+    "/addresses/communes/{commune}/villages": {
+      "get": {
+        "tags": ["Addresses"],
+        "summary": "List active villages in a commune",
+        "parameters": [{"$ref": "#/components/parameters/CommuneId"}],
+        "responses": {
+          "200": {"$ref": "#/components/responses/LocationList"},
+          "401": {"$ref": "#/components/responses/Unauthenticated"},
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "opaque token"
+      }
+    },
+    "parameters": {
+      "ProvinceId": {
+        "name": "province",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "integer", "minimum": 1}
+      },
+      "DistrictId": {
+        "name": "district",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "integer", "minimum": 1}
+      },
+      "CommuneId": {
+        "name": "commune",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "integer", "minimum": 1}
+      }
+    },
+    "responses": {
+      "Unauthenticated": {
+        "description": "Bearer token is missing or invalid",
+        "content": {
+          "application/json": {
+            "schema": {"$ref": "#/components/schemas/Error"}
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {"$ref": "#/components/schemas/Error"}
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Too many attempts"
+      },
+      "NotFound": {
+        "description": "Resource not found"
+      },
+      "LocationList": {
+        "description": "Locations",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/Location"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["phone", "password", "password_confirmation"],
+        "properties": {
+          "phone": {"type": "string", "example": "012345678"},
+          "password": {"type": "string", "format": "password", "minLength": 8, "example": "password123"},
+          "password_confirmation": {"type": "string", "format": "password", "example": "password123"},
+          "device_name": {"type": "string", "maxLength": 100, "example": "Pixel 9"}
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["login", "password"],
+        "properties": {
+          "login": {"type": "string", "description": "Phone number or student ID", "example": "012345678"},
+          "password": {"type": "string", "format": "password", "example": "password123"},
+          "device_name": {"type": "string", "maxLength": 100, "example": "Pixel 9"}
+        }
+      },
+      "Account": {
+        "type": "object",
+        "required": ["id", "phone", "profile_completed"],
+        "properties": {
+          "id": {"type": "integer", "example": 1},
+          "student_id": {"type": "string", "nullable": true, "example": "0001"},
+          "phone": {"type": "string", "example": "012345678"},
+          "profile_completed": {"type": "boolean", "example": true}
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "message": {"type": "string"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {"type": "string"},
+              "token_type": {"type": "string", "example": "Bearer"},
+              "account": {"$ref": "#/components/schemas/Account"}
+            }
+          }
+        }
+      },
+      "ProfileRequest": {
+        "type": "object",
+        "required": [
+          "name_km", "name_en", "gender", "emergency_name", "emergency_phone",
+          "current_province_id", "current_district_id", "current_commune_id", "current_village_id",
+          "permanent_province_id", "permanent_district_id", "permanent_commune_id", "permanent_village_id"
+        ],
+        "properties": {
+          "name_km": {"type": "string", "maxLength": 100},
+          "name_en": {"type": "string", "maxLength": 100, "example": "Sok Dara"},
+          "date_of_birth": {"type": "string", "format": "date", "nullable": true},
+          "gender": {"type": "string", "enum": ["ប្រុស", "ស្រី"]},
+          "nationality": {"type": "string", "nullable": true},
+          "email": {"type": "string", "format": "email", "nullable": true},
+          "current_province_id": {"type": "integer"},
+          "current_district_id": {"type": "integer"},
+          "current_commune_id": {"type": "integer"},
+          "current_village_id": {"type": "integer"},
+          "current_house": {"type": "string", "nullable": true},
+          "current_street": {"type": "string", "nullable": true},
+          "permanent_province_id": {"type": "integer"},
+          "permanent_district_id": {"type": "integer"},
+          "permanent_commune_id": {"type": "integer"},
+          "permanent_village_id": {"type": "integer"},
+          "permanent_house": {"type": "string", "nullable": true},
+          "permanent_street": {"type": "string", "nullable": true},
+          "father_name": {"type": "string", "nullable": true},
+          "father_occupation": {"type": "string", "nullable": true},
+          "father_phone": {"type": "string", "nullable": true},
+          "mother_name": {"type": "string", "nullable": true},
+          "mother_occupation": {"type": "string", "nullable": true},
+          "mother_phone": {"type": "string", "nullable": true},
+          "emergency_name": {"type": "string"},
+          "emergency_phone": {"type": "string"},
+          "high_school": {"type": "string", "nullable": true},
+          "graduation_year": {"type": "integer", "minimum": 1900, "nullable": true},
+          "education_province_id": {"type": "integer", "nullable": true},
+          "certificate": {"type": "string", "format": "binary", "nullable": true}
+        }
+      },
+      "ProfileResponse": {
+        "type": "object",
+        "properties": {
+          "message": {"type": "string"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "account": {"$ref": "#/components/schemas/Account"},
+              "profile": {
+                "allOf": [{"$ref": "#/components/schemas/ProfileRequest"}],
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "code": {"type": "string"},
+          "name": {"type": "string"},
+          "name_other": {"type": "string", "nullable": true}
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {"message": {"type": "string"}}
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {"type": "string"},
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [{"bearerAuth": []}]
+}
